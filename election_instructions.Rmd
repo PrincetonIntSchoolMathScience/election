@@ -1,0 +1,32 @@
+---
+title: "Ankara Election"
+output: pdf_document
+---
+
+
+
+A google image search of [Ankara's mayoral elections outcome](https://www.google.com/search?q=Ankara+mayoral+elections&es_sm=91&source=lnms&tbm=isch&sa=X&ei=DxdgU77yH4zJsQTRiYC4Bg&ved=0CAoQ_AUoAw&biw=1127&bih=598#q=Ankara+mayoral+elections+outcome&tbm=isch&imgdii=_), shows the top results to be of a various scatterplots claiming voter irregularities . 
+
+This is an analysis of the 2014 mayoral elections. After the dataset of the election outcome was released several people tweeted about voter irregularities. The discussion picked up after a post by [erenyanik](https://twitter.com/emeyersson/status/450978793746743298).
+
+[erenyanik](https://twitter.com/emeyersson/status/450978793746743298) shows a plot of the AKP-CHP voter share versus turnout rate. The graph shows that AKP claims the majority of the irregular votes while loosing the regular vote. 
+
+
+In our project we explore the data, reproduce some of the results already published and add new insights gained from the data. 
+
+
+1. Explore the data. Create bar plots and scatter plots. 
+2. Recreate this [graph](https://twitter.com/emeyersson/status/450978793746743298)
+3. Geodesics: Create a map of how the AKP and CHP votes are distributed
+4. Conclusion
+
+
+
+
+
+
+
+
+
+
+
