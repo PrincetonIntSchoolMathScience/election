@@ -1,6 +1,6 @@
 ---
 title: "Ankara Election"
-output: pdf_document
+output: html_document
 ---
 
 
@@ -18,15 +18,29 @@ In our project we explore the data, reproduce some of the results already publis
 1. Explore the data. Create bar plots and scatter plots. 
 2. Recreate this [graph](https://twitter.com/emeyersson/status/450978793746743298)
 3. Geodesics: Create a map of how the AKP and CHP votes are distributed
-4. Conclusion
+4. Conclusion. 
 
 
 
 
+```{r loading the data}
+ankara <- read.csv("ankara.csv")
+head(ankara)
+
+```
 
 
 
+#### Let's start by first translating the columns we are interested:    
 
 
+Turkish ——-> English    
+gecerli_oy: valid votes     
+gecersiz_oy: disputed votes     
+akp_oy: main party     
+chp_oy: main opposition party    
+mhp_oy: nationalist party    
+kayitli_secmen: registered voters     
+kullanilan_toplam_oy: actual votes     
 
 
