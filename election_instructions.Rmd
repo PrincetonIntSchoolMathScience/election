@@ -5,7 +5,7 @@ output: pdf_document
 
 
 
-A google image search of [Ankara's mayoral elections outcome](https://www.google.com/search?q=Ankara+mayoral+elections&es_sm=91&source=lnms&tbm=isch&sa=X&ei=DxdgU77yH4zJsQTRiYC4Bg&ved=0CAoQ_AUoAw&biw=1127&bih=598#q=Ankara+mayoral+elections+outcome&tbm=isch&imgdii=_), shows the top results to be of a various scatterplots claiming voter irregularities. 
+A google image search of [Ankara's mayoral elections outcome](https://www.google.com/search?q=Ankara+mayoral+elections&es_sm=91&source=lnms&tbm=isch&sa=X&ei=DxdgU77yH4zJsQTRiYC4Bg&ved=0CAoQ_AUoAw&biw=1127&bih=598#q=Ankara+mayoral+elections+outcome&tbm=isch&imgdii=_), shows the top results to be of a various scatterplots claiming voter irregularities . 
 
 This is an analysis of the 2014 mayoral elections. After the dataset of the election outcome was released several people tweeted about voter irregularities. The discussion picked up after a post by [erenyanik](https://twitter.com/emeyersson/status/450978793746743298).
 
