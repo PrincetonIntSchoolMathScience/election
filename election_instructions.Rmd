@@ -3,11 +3,6 @@ title: "Ankara Election"
 output: html_document
 ---
 
-<<<<<<< HEAD
-#asdfkl
-=======
-
->>>>>>> 1a1acde152aecb33acc159950509f6fec6769119
 
 A google image search of [Ankara's mayoral elections outcome](https://www.google.com/search?q=Ankara+mayoral+elections&es_sm=91&source=lnms&tbm=isch&sa=X&ei=DxdgU77yH4zJsQTRiYC4Bg&ved=0CAoQ_AUoAw&biw=1127&bih=598#q=Ankara+mayoral+elections+outcome&tbm=isch&imgdii=_), shows the top results to be of a various scatterplots claiming voter irregularities . 
 
