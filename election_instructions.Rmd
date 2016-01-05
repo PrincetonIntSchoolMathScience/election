@@ -31,14 +31,15 @@ names(ankara)
 
 #### Let's start by first translating the columns we are interested:    
 
-Turkish ——-> English    
-gecerli_oy: valid votes     
-gecersiz_oy: disputed votes     
-akp_oy: main party     
-chp_oy: main opposition party    
-mhp_oy: nationalist party    
-kayitli_secmen: registered voters     
-kullanilan_toplam_oy: actual votes
+Turkish to English translation    
+
+- gecerli_oy: valid votes     
+- gecersiz_oy: disputed votes     
+- akp_oy: main party     
+- chp_oy: main opposition party    
+- mhp_oy: nationalist party    
+- kayitli_secmen: registered voters     
+- kullanilan_toplam_oy: actual votes
 
 #### Chapter 1: Creating a bar graph
 
@@ -69,5 +70,5 @@ print(pl1)
 
 
 ```{}
-plot(mtcars)
+plot(mtcars$mpg ~ mtcars$hp)
 ```
