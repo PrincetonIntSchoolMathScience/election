@@ -22,7 +22,8 @@ In our project we explore the data, reproduce some of the results already publis
 
 
 ```{r loading the data}
-ankara <- read.csv("ankara.csv")
+library(readr)
+ankara <- read_csv("ankara.csv.zip")
 #head(ankara)
 #summary(ankara)
 names(ankara)
