@@ -21,9 +21,8 @@ In our project we explore the data, reproduce some of the results already publis
 
 
 
-```{r loading the data}
-library(readr)
-ankara <- read_csv("ankara.csv.zip")
+```{r, loading the data}
+ankara <- read.csv("ankara.csv")
 #head(ankara)
 #summary(ankara)
 names(ankara)
@@ -44,7 +43,7 @@ kullanilan_toplam_oy: actual votes
 
 Select essential columns and transform the data frame
 
-```{}
+```{r}
 library(dplyr)
 df <- select(ankara, 9, 12, 15, 21, 29, 31)
 library(reshape2)
@@ -54,20 +53,15 @@ head(df_l)
 
 Add the value of each group
 
-```{}
+```{r}
 df_n <- group_by(df_l, variable) %>% 
         summarize(s = sum(value))
 ```
 
 Make the bar plot
 
-```{}
+```{r, echo=FALSE}
 library(ggplot2)
-pl1 <- ggplot(df_n, aes(x=variable, y=s)) + geom_bar(stat="sum")
-print(pl1)
-```
-
-
-```{}
-plot(mtcars)
+pl1 <- ggplot(df_n, aes(x=variable, y=s)) + geom_bar(stat="sum") + main="vote summary"+ xlab="party name"+ ylab="votes"
+plot(pl1)
 ```
