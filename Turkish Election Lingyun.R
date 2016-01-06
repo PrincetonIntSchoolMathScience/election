@@ -14,6 +14,8 @@ df_n <- group_by(df_l, variable) %>%
         summarize(s = sum(value))
 
 library(ggplot2)
-ggplot(df_n, aes(x=variable, y=s)) + geom_bar(stat="sum")
-
-
+ggplot(df_n, aes(x=variable, y=s)) + 
+  geom_bar(stat="sum") +
+  xlab("party name") +
+  ylab("votes") +
+  ggtitle("Turkish election vote summary")
