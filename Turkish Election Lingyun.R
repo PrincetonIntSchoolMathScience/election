@@ -19,3 +19,6 @@ ggplot(df_n, aes(x=variable, y=s)) +
   xlab("party name") +
   ylab("votes") +
   ggtitle("Turkish election vote summary")
+
+ankara$akp_chp=(ankara$akp_oy-ankara$chp_oy)
+ankara$akp_chp
