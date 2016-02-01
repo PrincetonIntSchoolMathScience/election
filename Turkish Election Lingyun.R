@@ -4,12 +4,25 @@ head(ankara)
 summary(ankara)
 names(ankara)
 
+names(ankara)[1] <- "County"
+names(ankara)[2] <- "District"
+names(ankara)[3] <- "Box Number"
+names(ankara)[4] <- "Voting Station"
+names(ankara)[8] <- "Registered Votes"
+names(ankara)[9] <- "Registered Voters Voting"
+names(ankara)[10] <- "Using the law should vote"
+names(ankara)[11] <- "Used total votes"
+names(ankara)[12] <- "Unargued Valid Votes"
+names(ankara)[13] <- "Argued Valid Votes"
+names(ankara)[14] <- "Valid Votes"
+names(ankara)[15] <- "Invalid Votes"
+
 #Select and reshape the dataset
 library(dplyr)
 df <- select(ankara, 9, 12, 15, 21, 29, 31)
 
 library(reshape2)
-df_l <- melt(df, id=c("itirazsiz_gecerli_oy", "gecersiz_oy"))
+df_l <- melt(df, id=c("Argued Valid Votes", "Invalid Votes"))
 head(df_l)
 
 df_n <- group_by(df_l, variable) %>% 
@@ -45,3 +58,5 @@ pl2 + geom_point(size=2, colour="blue") +xlim(0.2, 1.2) +ylim(0, 1) +
                  xlab("Turnout") +
                  ylab("AKP Vote Share") +
   stat_smooth(color="red")
+
+#Linear regression: AKP-CHP vs. invalid vote shares
