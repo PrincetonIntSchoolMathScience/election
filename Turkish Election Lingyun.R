@@ -36,19 +36,15 @@ ankara$akp_minus_chp=(ankara$akp_oy-ankara$chp_oy)
 ankara$akp_vote_share=(ankara$akp_oy/ankara$akp_plus_chp)
 na.omit(ankara$akp_vote_share)
 
-library(dplyr)
-
 #Divide valid votes and registered votes gives the turnout rate
 ankara <- mutate(ankara, turn_out_rates = gecerli_oy/kayitli_secmen)
 ankara <- mutate(ankara, turn_out_rates2 = kullanilan_toplam_oy/kayitli_secmen)
 
 #Divide invalid votes and actual votes gives the invalid ballot share
 ankara$ballot=(ankara$gecersiz_oy/ankara$kullanilan_toplam_oy)
-par(cex=.5)
-plot(ankara$ballot, ankara$akp_minus_chp)
-abline(lm(ankara$akp_minus_chp~ankara$ballot), col="red")
 
 #Make a scatter plot regarding akp vote share and turnout rates
+library(ggplot2)
 pl2 <- ggplot(ankara, aes(x=turn_out_rates, y=akp_vote_share),
               ggtitle="AKP Vote Share vs turnout")
 pl2 + geom_point(size=2, colour="blue") +xlim(0.2, 1.2) +ylim(0, 1) +
@@ -56,26 +52,32 @@ pl2 + geom_point(size=2, colour="blue") +xlim(0.2, 1.2) +ylim(0, 1) +
   ylab("AKP Vote Share") +
   stat_smooth(color="red")
 
+#Make the scatter plot of akp-chp vote share and invalid ballot share
+par(pch=16)
+plot(ankara$ballot, ankara$akp_minus_chp)
+abline(lm(ankara$akp_minus_chp~ankara$ballot), col="red")
+
 #Linear Regression between AKP-CHP and Turnout Rate
-fit <- lm(ankara$akp_minus_chp ~ ankara$turn_out_rates)
-plot(fit)
-
-na.omit(ankara)
-
-library(caret)
-set.seed(100)
-inTraining <- createDataPartition(ankara$akp_minus_chp, p = .75, list = FALSE, times = 1)
-inTraining
-train <- ankara[inTraining,]
-test <- ankara[-inTraining,]
-fitControl <- trainControl(
-  method = "cv",
-  number = 10
-)
-fit2 <- train(ankara$akp_minus_chp ~ ankara$turn_out_rates, data = train,
-             method = "lm",
-             trControl = fitControl,
-             verbose = FALSE)
-fit2
-plot(ankara$turn_out_rates, ankara$akp_minus_chp)
+fit <- lm(ankara$akp_vote_share ~ ankara$ballot)
+summary(fit)
 abline(fit)
+confint(fit)
+fit
+
+library(boot)
+# function to obtain R-Squared from the data 
+rsq <- function(formula, data, indices) {
+  d <- data[indices,] # allows boot to select sample 
+  fit <- lm(formula, data=d)
+  return(summary(fit)$r.square)
+} 
+
+library(dplyr)
+ankara_complete <- ankara %>%
+  select(akp_vote_share, ballot) %>%
+  na.omit
+
+#Bootstrap to estimate the significance level of fit line 
+boot.fn=function(data, index)
+return(coef(lm(akp_vote_share~ballot, data=data, subset=index)))
+boot(ankara_complete, boot.fn, 1000)
