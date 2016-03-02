@@ -57,21 +57,6 @@ par(pch=16)
 plot(ankara$ballot, ankara$akp_minus_chp)
 abline(lm(ankara$akp_minus_chp~ankara$ballot), col="red")
 
-#Linear Regression between AKP-CHP and Turnout Rate
-fit <- lm(ankara$akp_vote_share ~ ankara$ballot)
-summary(fit)
-abline(fit)
-confint(fit)
-fit
-
-library(boot)
-# function to obtain R-Squared from the data 
-rsq <- function(formula, data, indices) {
-  d <- data[indices,] # allows boot to select sample 
-  fit <- lm(formula, data=d)
-  return(summary(fit)$r.square)
-} 
-
 library(dplyr)
 ankara_complete <- ankara %>%
   select(akp_vote_share, ballot) %>%
