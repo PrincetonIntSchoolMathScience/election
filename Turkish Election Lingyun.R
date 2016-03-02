@@ -26,6 +26,14 @@ pl <- ggplot(df_n, aes(x=variable, y=s)) +
                    labels=c("Total Votes", "Justice and Development Party", "Republican People's Party", "Nationalist Movement Party"))
 pl + theme(axis.text.x = element_text(angle=30, hjust=1, vjust=1)) + theme(legend.position="none")
 
+#Get the sum of votes from all the parties
+total_vote <- select(ankara, 16:32)
+colSums(total_vote, na.rm=T)
+ankara$total_vote <- rowSums(total_vote, na.rm=T)
+
+#Calculate akp total vote share
+ankara$akp_total_vote_share <- (ankara$akp_oy/ankara$total_vote)
+
 #Add akp and chp number of votes
 ankara$akp_plus_chp=(ankara$akp_oy+ankara$chp_oy)
 
@@ -57,12 +65,26 @@ par(pch=16)
 plot(ankara$ballot, ankara$akp_minus_chp)
 abline(lm(ankara$akp_minus_chp~ankara$ballot), col="red")
 
+#Make the scatter plot of akp total vote share and turnout rates
+pl3 <- ggplot(ankara, aes(x=turn_out_rates, y=akp_total_vote_share),
+              ggtitle="AKP Total Vote Share vs turnout")
+pl3 + geom_point(size=2, colour="blue") +xlim(0.2, 1.2) +ylim(0, 1) +
+  xlab("Turnout") +
+  ylab("AKP Total Vote Share") +
+  stat_smooth(color="red")
+
+#Make the scatter plot of akp total vote share and invalid ballot share
+par(pch=20)
+plot(ankara$ballot, ankara$akp_total_vote_share)
+abline(lm(ankara$akp_total_vote_share~ankara$ballot), col="red")
+
 library(dplyr)
 ankara_complete <- ankara %>%
-  select(akp_vote_share, ballot) %>%
+  select(akp_total_vote_share, ballot) %>%
   na.omit
 
-#Bootstrap to estimate the significance level of fit line 
+#Bootstrap to estimate the significance level of the fit line 
+library(boot)
 boot.fn=function(data, index)
-return(coef(lm(akp_vote_share~ballot, data=data, subset=index)))
-boot(ankara_complete, boot.fn, 1000)
+return(coef(lm(akp_total_vote_share~ballot, data=data, subset=index)))
+boot(ankara, boot.fn, 1000)
