@@ -24,7 +24,9 @@ pl <- ggplot(df_n, aes(x=variable, y=s)) +
   ggtitle("Turkish election vote summary") +
   scale_x_discrete(breaks=c("oy_kullanan_kayitli_secmen", "akp_oy", "chp_oy", "mhp_oy"),
                    labels=c("Total Votes", "Justice and Development Party", "Republican People's Party", "Nationalist Movement Party"))
-pl + theme(axis.text.x = element_text(angle=30, hjust=1, vjust=1)) + theme(legend.position="none")
+pl <- pl + theme(axis.text.x = element_text(angle=30, hjust=1, vjust=1)) + theme(legend.position="none")
+
+print(pl)
 
 #Get the sum of votes from all the parties
 total_vote <- select(ankara, 16:32)
@@ -80,11 +82,46 @@ abline(lm(ankara$akp_total_vote_share~ankara$ballot), col="red")
 
 library(dplyr)
 ankara_complete <- ankara %>%
-  select(akp_total_vote_share, ballot) %>%
+  select(akp_total_vote_share, turn_out_rates) %>%
   na.omit
 
 #Bootstrap to estimate the significance level of the fit line 
+set.seed(123)
 library(boot)
 boot.fn=function(data, index)
-return(coef(lm(akp_total_vote_share~ballot, data=data, subset=index)))
-boot(ankara, boot.fn, 1000)
+return(coef(lm(akp_total_vote_share~turn_out_rates, data=data, subset=index)))
+boot(ankara_complete, boot.fn, 1000)
+
+#Difference between bootstrapping for different turn out rates, also omitted NA values
+
+boot(filter(ankara_complete, turn_out_rates <= 0.95), boot.fn, 1000)
+
+boot(filter(ankara_complete, turn_out_rates > 0.95), boot.fn, 1000)
+
+boot(filter(ankara_complete, turn_out_rates <= 1.0), boot.fn, 1000)
+
+boot(filter(ankara_complete, turn_out_rates > 1.0), boot.fn, 1000)
+
+ankara_complete$turn_out_rates_big <- ankara_complete$turn_out_rates>1.0
+
+#The linear regression shows statistical significance in the 0.95 case, but not in 1.0 case
+
+#Correlation between two variables and signifance of the coefficient
+#Positive/Negative relationship, quantifying the confidence interval
+
+cor(ankara_complete[, c("akp_total_vote_share", "turn_out_rates_big")])
+
+###############
+pl3 <- ggplot(meantime, aes(x=turn_out_rates, y=akp_total_vote_share),
+              ggtitle="AKP Total Vote Share vs turnout")
+pl3 + geom_point(size=2, colour="blue") +xlim(0.5, 1.2) +ylim(0, 1) +
+  xlab("Turnout") +
+  ylab("AKP Total Vote Share") +
+  stat_smooth(data=filter(ankara), method = "lm", aes(color = turn_out_rates >1))
+###############
+pl3 <- ggplot(ankara, aes(x=turn_out_rates, y=akp_total_vote_share),
+              ggtitle="AKP Total Vote Share vs turnout")
+pl3 + geom_point(size=2, colour="blue") +xlim(0.5, 1.2) +ylim(0, 1) +
+  xlab("Turnout") +
+  ylab("AKP Total Vote Share") +
+  stat_smooth(data=filter(ankara), method = "lm", aes(color = turn_out_rates >1))
