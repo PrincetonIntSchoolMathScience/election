@@ -109,13 +109,20 @@ boot(filter(ankara_complete, turn_out_rates > 1.0), boot.fn, 1000)
 
 cor(ankara_complete$akp_total_vote_share, method = "pearson", ankara_complete$turn_out_rates)
 
-###############
-pl3 <- ggplot(meantime, aes(x=turn_out_rates, y=akp_total_vote_share),
-              ggtitle="AKP Total Vote Share vs turnout")
-pl3 + geom_point(size=2, colour="blue") +xlim(0.5, 1.2) +ylim(0, 1) +
-  xlab("Turnout") +
-  ylab("AKP Total Vote Share") +
-  stat_smooth(data=filter(ankara), method = "lm", aes(color = turn_out_rates >1))
+#Correlation with bootstrap
+library(boot)
+bootTau <- function(ankara_complete, i)
+  cor(ankara_complete$akp_total_vote_share[i], ankara_complete$turn_out_rates[i], method="pearson")
+
+boot_pearson<-boot(filter(ankara_complete, turn_out_rates > 1.0), bootTau, 2)
+boot_pearson
+
+bootTau <- function(ankara_complete, i)
+  cor(ankara_complete$akp_total_vote_share[i], ankara_complete$turn_out_rates[i], method="pearson")
+
+boot_pearson<-boot(filter(ankara_complete, turn_out_rates <= 1.0), bootTau, 2)
+boot_pearson
+
 ###############
 pl3 <- ggplot(ankara, aes(x=turn_out_rates, y=akp_total_vote_share),
               ggtitle="AKP Total Vote Share vs turnout")
