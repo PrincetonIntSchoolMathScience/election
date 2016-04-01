@@ -94,22 +94,20 @@ boot(ankara_complete, boot.fn, 1000)
 
 #Difference between bootstrapping for different turn out rates, also omitted NA values
 
-boot(filter(ankara_complete, turn_out_rates <= 0.95), boot.fn, 1000)
+boot(filter(ankara_complete, turn_out_rates <= 0.96), boot.fn, 1000)
 
-boot(filter(ankara_complete, turn_out_rates > 0.95), boot.fn, 1000)
+boot(filter(ankara_complete, turn_out_rates > 0.96), boot.fn, 1000)
 
 boot(filter(ankara_complete, turn_out_rates <= 1.0), boot.fn, 1000)
 
 boot(filter(ankara_complete, turn_out_rates > 1.0), boot.fn, 1000)
-
-ankara_complete$turn_out_rates_big <- ankara_complete$turn_out_rates>1.0
 
 #The linear regression shows statistical significance in the 0.95 case, but not in 1.0 case
 
 #Correlation between two variables and signifance of the coefficient
 #Positive/Negative relationship, quantifying the confidence interval
 
-cor(ankara_complete[, c("akp_total_vote_share", "turn_out_rates_big")])
+cor(ankara_complete$akp_total_vote_share, method = "pearson", ankara_complete$turn_out_rates)
 
 ###############
 pl3 <- ggplot(meantime, aes(x=turn_out_rates, y=akp_total_vote_share),
