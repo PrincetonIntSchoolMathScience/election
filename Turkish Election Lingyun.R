@@ -73,7 +73,8 @@ pl3 <- ggplot(ankara, aes(x=turn_out_rates, y=akp_total_vote_share),
 pl3 + geom_point(size=2, colour="blue") +xlim(0.2, 1.2) +ylim(0, 1) +
   xlab("Turnout") +
   ylab("AKP Total Vote Share") +
-  stat_smooth(color="red")
+  stat_smooth(color="red", data = subset(ankara, turn_out_rates < 0.96)) +
+  stat_smooth(color="green", data = subset(ankara, turn_out_rates >= 0.96))
 
 #Make the scatter plot of akp total vote share and invalid ballot share
 par(pch=20)
@@ -83,7 +84,7 @@ abline(lm(ankara$akp_total_vote_share~ankara$ballot), col="red")
 library(dplyr)
 ankara_complete <- ankara %>%
   select(akp_total_vote_share, turn_out_rates) %>%
-  na.omit
+  na.omit(ankara_complete)
 
 #Bootstrap to estimate the significance level of the fit line 
 set.seed(123)
@@ -94,13 +95,18 @@ boot(ankara_complete, boot.fn, 1000)
 
 #Difference between bootstrapping for different turn out rates, also omitted NA values
 
-boot(filter(ankara_complete, turn_out_rates <= 0.96), boot.fn, 1000)
+bootless <- boot(filter(ankara_complete, turn_out_rates <= 0.96), boot.fn, 1000)
+bootless
+#y=-0.30x+0.72
 
-boot(filter(ankara_complete, turn_out_rates > 0.96), boot.fn, 1000)
+bootmore <- boot(filter(ankara_complete, turn_out_rates > 0.96), boot.fn, 1000)
+bootmore
+#y=1.24x-0.69
 
-boot(filter(ankara_complete, turn_out_rates <= 1.0), boot.fn, 1000)
+#Bootstrap confidence interval 95%
+boot.ci(bootless)
 
-boot(filter(ankara_complete, turn_out_rates > 1.0), boot.fn, 1000)
+#Visualization of the correlation & the confidence intervals
 
 #The linear regression shows statistical significance in the 0.95 case, but not in 1.0 case
 
@@ -111,22 +117,43 @@ cor(ankara_complete$akp_total_vote_share, method = "pearson", ankara_complete$tu
 
 #Correlation with bootstrap
 library(boot)
-bootTau <- function(ankara_complete, i)
-  cor(ankara_complete$akp_total_vote_share[i], ankara_complete$turn_out_rates[i], method="pearson")
 
-boot_pearson<-boot(filter(ankara_complete, turn_out_rates > 1.0), bootTau, 2)
+bootTau <- function(data_temp, i)
+  cor(data_temp$akp_total_vote_share[i], data_temp$turn_out_rates[i], method="pearson")
+
+set.seed(1)
+boot_pearson<-boot(filter(ankara_complete, turn_out_rates > 0.96), bootTau, 2000)
 boot_pearson
+boot.ci(boot_pearson)
 
-bootTau <- function(ankara_complete, i)
-  cor(ankara_complete$akp_total_vote_share[i], ankara_complete$turn_out_rates[i], method="pearson")
 
-boot_pearson<-boot(filter(ankara_complete, turn_out_rates <= 1.0), bootTau, 2)
+library(dplyr)
+set.seed(1)
+temp2 <- filter(ankara_complete, turn_out_rates <= 0.96) %>%
+  sample_n(2000)
+
+set.seed(1)
+boot_pearson<-boot(temp2, bootTau, 2000)
 boot_pearson
+boot.ci(boot_pearson)
 
-###############
-pl3 <- ggplot(ankara, aes(x=turn_out_rates, y=akp_total_vote_share),
-              ggtitle="AKP Total Vote Share vs turnout")
-pl3 + geom_point(size=2, colour="blue") +xlim(0.5, 1.2) +ylim(0, 1) +
-  xlab("Turnout") +
-  ylab("AKP Total Vote Share") +
-  stat_smooth(data=filter(ankara), method = "lm", aes(color = turn_out_rates >1))
+boot_pearson2<-boot(filter(ankara_complete, turn_out_rates >0.96), bootTau, 2000)
+boot_pearson2
+boot.ci(boot_pearson2)
+
+#Results: +0.21 vs -0.049
+
+filter(ankara_complete, turn_out_rates > 1.0)
+filter(ankara_complete, turn_out_rates <= 1.0)
+
+
+#Comparing correlations
+zdifference <- function(z_r1, z_r2, N1, N2){
+  z_difference <- (z_r1-z_r2)/(sqrt(1/(N1-3))+sqrt(1/(N2-3)))
+  return(z_difference)}
+
+zdifference(0.2143666, -0.04946035, 81 ,12149)
+
+#z=2.157187, statistically significant
+
+myfunction(z_r1, z_r2, N1, N2) <- (z_r1-z_r2)/(sqrt(1/(N1-3))+sqrt(1/(N2-3)))
