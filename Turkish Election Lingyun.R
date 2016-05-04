@@ -100,17 +100,6 @@ all_coef<-sapply(all_fits, function(x) x["coef"])
 intercepts<-sapply(all_coef, function(x) x["(Intercept)"])
 slopes<-sapply(all_coef, function(x) x["turn_out_rates"])
 
-plot(akp_total_vote_share~turn_out_rates)
-abline(intercepts[1], slopes[1])
-
-for(i in 1:length(slopes))
-  abline(intercepts[i], slopes[i])
-
-pl4 <- ggplot(aes(x=turn_out_rates, y=akp_total_vote_share), data=ankara_1) + geom_point()
-for(i in 1:length(slopes))
-  pl4 <- pl4 +geom_abline(intercept=intercepts[i], slope=slopes[i])
-pl4
-
 #Plotting the confidence interval of the correlations for turn out rates <= 0.96
 ankara_2 <- filter(ankara_complete, turn_out_rates <= 0.96)
 attach(ankara_2)
@@ -125,25 +114,13 @@ intercepts2<-sapply(all_coef2, function(x) x["(Intercept)"])
 
 slopes2<-sapply(all_coef2, function(x) x["turn_out_rates"])
 
-plot(akp_total_vote_share~turn_out_rates)
-abline(intercepts2[1], slopes2[1])
-
-for(i in 1:length(slopes2))
-  abline(intercepts2[i], slopes2[i])
-
-pl5 <- ggplot(aes(x=turn_out_rates, y=akp_total_vote_share), data=ankara_2) + geom_point()
-for(i in 1:length(slopes2))
-  pl5 <- pl5 +geom_abline(intercept=intercepts2[i], slope=slopes2[i], color = "gray")
-pl5
-
-
-############
-
+#Plotting the whole scatter plot separated by the threshold value. 
 
 pl6 <- ggplot(aes(x=turn_out_rates, y=akp_total_vote_share), data=ankara_complete) + geom_point()
-for(i in 1:3)
-  pl6 <- pl6 + geom_abline(intercept=intercepts[i], slope=slopes[i], data=ankara_1) +
-               geom_abline(intercept=intercepts2[i], slope=slopes2[i], data=ankara_2)
+for(i in 1:100)
+  pl6 <- pl6 + geom_abline(intercept=intercepts[i], slope=slopes[i], data=ankara_1, color="purple") +
+               geom_abline(intercept=intercepts2[i], slope=slopes2[i], data=ankara_2, color="yellow") +
+               geom_vline(xintercept=0.96, color="red")
 pl6
 
 #Make the scatter plot of akp total vote share and invalid ballot share
