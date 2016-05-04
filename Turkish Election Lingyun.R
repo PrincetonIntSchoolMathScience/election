@@ -116,12 +116,30 @@ slopes2<-sapply(all_coef2, function(x) x["turn_out_rates"])
 
 #Plotting the whole scatter plot separated by the threshold value. 
 
-pl6 <- ggplot(aes(x=turn_out_rates, y=akp_total_vote_share), data=ankara_complete) + geom_point()
-for(i in 1:100)
-  pl6 <- pl6 + geom_abline(intercept=intercepts[i], slope=slopes[i], data=ankara_1, color="purple") +
-               geom_abline(intercept=intercepts2[i], slope=slopes2[i], data=ankara_2, color="yellow") +
-               geom_vline(xintercept=0.96, color="red")
+x1_s <- 0.96
+x1_e <- 1.20
+y1_s <- intercepts + x1_s*slopes
+y1_e <- intercepts + x1_e*slopes
+names(y1_s) <- NULL
+names(y1_e) <- NULL
+
+
+x2_s <- 0.3
+x2_e <- 0.96
+y2_s <- intercepts2 + x2_s*slopes2
+y2_e <- intercepts2 + x2_e*slopes2
+names(y2_s) <- NULL
+names(y2_e) <- NULL
+
+pl6 <- ggplot(aes(x=turn_out_rates, y=akp_total_vote_share), data=ankara_complete) + geom_point() +
+  geom_vline(xintercept=0.96, color="red")
+for(abc in 1:10)
+  pl6 <- pl6 + geom_segment(x=x1_s, y=y1_s[abc], xend=x1_e, yend=y1_e[abc], color="purple", alpha=0.2) + 
+         geom_segment(x=x2_s, y=y2_s[abc], xend=x2_e, yend=y2_e[abc], color="yellow", alpha=0.2)
 pl6
+
+
+
 
 #Make the scatter plot of akp total vote share and invalid ballot share
 par(pch=20)
