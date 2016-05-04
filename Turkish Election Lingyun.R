@@ -1,7 +1,7 @@
 #Read and summarize the data 
 ankara <- read.csv("ankara.csv")
 head(ankara)
-summary(ankara)
+summary(ankara) 
 names(ankara)
 
 #Select and reshape the dataset
@@ -76,20 +76,80 @@ endpoint2 <- data.frame(x3 = 0.96, x4 = 1.2, y3 = 0.495029788 , y4 = 0.85494815)
 pl3 + geom_point(size=2, colour="blue") +xlim(0.2, 1.2) +ylim(0, 1) +
   xlab("Turnout") +
   ylab("AKP Total Vote Share") +
-  stat_smooth(color="red", data = subset(ankara, turn_out_rates < 0.96)) +
-  stat_smooth(color="green", data = subset(ankara, turn_out_rates >= 0.96)) +
+  #stat_smooth(color="red", data = subset(ankara, turn_out_rates < 0.96)) +
+  #stat_smooth(color="green", data = subset(ankara, turn_out_rates >= 0.96)) +
   geom_segment(aes(x=x1, y=y1, xend=x2, yend=y2), data = endpoint1, color="yellow") +
-  geom_segment(aes(x=x3, y=y3, xend=x4, yend=y4), data = endpoint2, color="purple")
+  geom_segment(aes(x=x3, y=y3, xend=x4, yend=y4), data = endpoint2, color="purple") 
+
+#Plotting the confidence interval of the correlations for turn out rates > 0.96
+library(dplyr)
+ankara_complete <- ankara %>%
+  select(akp_total_vote_share, turn_out_rates) %>%
+  na.omit(ankara_complete)
+
+library(simpleboot)
+ankara_1 <- filter(ankara_complete, turn_out_rates > 0.96)
+attach(ankara_1)
+lmodel<-lm(akp_total_vote_share~turn_out_rates)
+lboot<-lm.boot(lmodel,R=200)
+summary(lboot)
+
+all_fits<-lboot$boot.list
+all_coef<-sapply(all_fits, function(x) x["coef"])
+
+intercepts<-sapply(all_coef, function(x) x["(Intercept)"])
+slopes<-sapply(all_coef, function(x) x["turn_out_rates"])
+
+plot(akp_total_vote_share~turn_out_rates)
+abline(intercepts[1], slopes[1])
+
+for(i in 1:length(slopes))
+  abline(intercepts[i], slopes[i])
+
+pl4 <- ggplot(aes(x=turn_out_rates, y=akp_total_vote_share), data=ankara_1) + geom_point()
+for(i in 1:length(slopes))
+  pl4 <- pl4 +geom_abline(intercept=intercepts[i], slope=slopes[i])
+pl4
+
+#Plotting the confidence interval of the correlations for turn out rates <= 0.96
+ankara_2 <- filter(ankara_complete, turn_out_rates <= 0.96)
+attach(ankara_2)
+lmodel2<-lm(akp_total_vote_share~turn_out_rates)
+lboot2<-lm.boot(lmodel2,R=200)
+summary(lboot2)
+
+all_fits2<-lboot2$boot.list
+all_coef2<-sapply(all_fits2, function(x) x["coef"])
+
+intercepts2<-sapply(all_coef2, function(x) x["(Intercept)"])
+
+slopes2<-sapply(all_coef2, function(x) x["turn_out_rates"])
+
+plot(akp_total_vote_share~turn_out_rates)
+abline(intercepts2[1], slopes2[1])
+
+for(i in 1:length(slopes2))
+  abline(intercepts2[i], slopes2[i])
+
+pl5 <- ggplot(aes(x=turn_out_rates, y=akp_total_vote_share), data=ankara_2) + geom_point()
+for(i in 1:length(slopes2))
+  pl5 <- pl5 +geom_abline(intercept=intercepts2[i], slope=slopes2[i], color = "gray")
+pl5
+
+
+############
+
+
+pl6 <- ggplot(aes(x=turn_out_rates, y=akp_total_vote_share), data=ankara_complete) + geom_point()
+for(i in 1:3)
+  pl6 <- pl6 + geom_abline(intercept=intercepts[i], slope=slopes[i], data=ankara_1) +
+               geom_abline(intercept=intercepts2[i], slope=slopes2[i], data=ankara_2)
+pl6
 
 #Make the scatter plot of akp total vote share and invalid ballot share
 par(pch=20)
 plot(ankara$ballot, ankara$akp_total_vote_share)
 abline(lm(ankara$akp_total_vote_share~ankara$ballot), col="red")
-
-library(dplyr)
-ankara_complete <- ankara %>%
-  select(akp_total_vote_share, turn_out_rates) %>%
-  na.omit(ankara_complete)
 
 #Bootstrap to estimate the significance level of the fit line 
 library(boot)
@@ -116,6 +176,7 @@ set.seed(1)
 boot_pearson<-boot(temp2, bootTau, 8000)
 boot_pearson
 boot.ci(boot_pearson)
+
 #Results: 
 
 #Visualization of the correlation & the confidence intervals
