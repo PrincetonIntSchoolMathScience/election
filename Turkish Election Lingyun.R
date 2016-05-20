@@ -73,7 +73,7 @@ pl3 <- ggplot(ankara, aes(x=turn_out_rates, y=akp_total_vote_share),
 endpoint1 <- data.frame(x1 = 0.2889, x2 = 0.96 , y1 = 0.63482135561, y2 = 0.35475368)
 endpoint2 <- data.frame(x3 = 0.96, x4 = 1.2, y3 = 0.495029788 , y4 = 0.85494815)
 
-pl3 + geom_point(size=2, colour="blue") +xlim(0.2, 1.2) +ylim(0, 1) +
+pl3 <- pl3 + geom_point(size=2, colour="blue") +xlim(0.2, 1.2) +ylim(0, 1) +
   xlab("Turnout") +
   ylab("AKP Total Vote Share") +
   #stat_smooth(color="red", data = subset(ankara, turn_out_rates < 0.96)) +
@@ -87,6 +87,51 @@ ankara_complete <- ankara %>%
   select(akp_total_vote_share, turn_out_rates) %>%
   na.omit(ankara_complete)
 
+library(simpleboot)
+sq <- seq(0.50, 1.0, by = 0.01)
+
+#write.table("", file = "out.csv", append = F, quote = F, , col.names = F)
+
+t_res <- data.frame(p = c(), index = c())
+
+for(j in sq){
+  ankara_1_j <- filter(ankara_complete, turn_out_rates > j)
+  print(j)
+  attach(ankara_1_j)
+  lmodel_j<-lm(akp_total_vote_share~turn_out_rates)
+  lboot_j<-lm.boot(lmodel_j,R=200)
+  
+  all_fits_j<-lboot_j$boot.list
+  all_coef_j<-sapply(all_fits_j, function(x) x["coef"])
+  
+  intercepts_j<-sapply(all_coef_j, function(x) x["(Intercept)"])
+  slopes_j<-sapply(all_coef_j, function(x) x["turn_out_rates"])
+  
+  #Plotting the confidence interval of the correlations for turn out rates <= j
+  ankara_2_j <- filter(ankara_complete, turn_out_rates <= j)
+  attach(ankara_2_j)
+  lmodel2_j<-lm(akp_total_vote_share~turn_out_rates)
+  lboot2_j<-lm.boot(lmodel2_j,R=200)
+  summary(lboot2_j)
+  
+  all_fits2_j<-lboot2_j$boot.list
+  all_coef2_j<-sapply(all_fits2_j, function(x) x["coef"])
+  
+  intercepts2_j<-sapply(all_coef2_j, function(x) x["(Intercept)"])
+  
+  slopes2_j<-sapply(all_coef2_j, function(x) x["turn_out_rates"])
+  
+  #Non-parametric t-test
+  p_value <- wilcox.test(slopes_j, slopes2_j)$p.value
+  
+  t_res <- rbind(t_res, data.frame(p_value, index = j))
+  
+  #write.table(j, file = "out.csv", append = T,  quote = F, col.names = F)
+}
+
+t_res
+
+library(boot)
 library(simpleboot)
 ankara_1 <- filter(ankara_complete, turn_out_rates > 0.96)
 attach(ankara_1)
@@ -123,7 +168,6 @@ y1_e <- intercepts + x1_e*slopes
 names(y1_s) <- NULL
 names(y1_e) <- NULL
 
-
 x2_s <- 0.3
 x2_e <- 0.96
 y2_s <- intercepts2 + x2_s*slopes2
@@ -131,15 +175,16 @@ y2_e <- intercepts2 + x2_e*slopes2
 names(y2_s) <- NULL
 names(y2_e) <- NULL
 
-pl6 <- ggplot(aes(x=turn_out_rates, y=akp_total_vote_share), data=ankara_complete) + geom_point() +
+pl6 <- ggplot(aes(x=turn_out_rates, y=akp_total_vote_share), data=ankara_complete) + 
+  geom_point(size=2, colour="blue") +
   geom_vline(xintercept=0.96, color="red")
 for(abc in 1:10)
   pl6 <- pl6 + geom_segment(x=x1_s, y=y1_s[abc], xend=x1_e, yend=y1_e[abc], color="purple", alpha=0.2) + 
          geom_segment(x=x2_s, y=y2_s[abc], xend=x2_e, yend=y2_e[abc], color="yellow", alpha=0.2)
 pl6
 
-
-
+#Non-parametric t-test
+wilcox.test(slopes, slopes2)
 
 #Make the scatter plot of akp total vote share and invalid ballot share
 par(pch=20)
