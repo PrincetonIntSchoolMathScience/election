@@ -81,6 +81,8 @@ pl3 <- pl3 + geom_point(size=2, colour="blue") +xlim(0.2, 1.2) +ylim(0, 1) +
   geom_segment(aes(x=x1, y=y1, xend=x2, yend=y2), data = endpoint1, color="yellow") +
   geom_segment(aes(x=x3, y=y3, xend=x4, yend=y4), data = endpoint2, color="purple") 
 
+pl3
+
 #Plotting the confidence interval of the correlations for turn out rates > 0.96
 library(dplyr)
 ankara_complete <- ankara %>%
@@ -89,8 +91,6 @@ ankara_complete <- ankara %>%
 
 library(simpleboot)
 sq <- seq(0.50, 1.0, by = 0.01)
-
-#write.table("", file = "out.csv", append = F, quote = F, , col.names = F)
 
 t_res <- data.frame(p = c(), index = c())
 
@@ -131,9 +131,15 @@ for(j in sq){
 
 t_res
 
+plot(t_res)
+
+ankara_complete %>% filter(turn_out_rates < 0.74) %>% summarize(n())
+#From the result, when turnout rates is less than 0.73 when less than 1%
+#of the data is on the left of the division point, the p-value is significantly larger
+
 library(boot)
 library(simpleboot)
-ankara_1 <- filter(ankara_complete, turn_out_rates > 0.96)
+ankara_1 <- filter(ankara_complete, turn_out_rates > 0.7)
 attach(ankara_1)
 lmodel<-lm(akp_total_vote_share~turn_out_rates)
 lboot<-lm.boot(lmodel,R=200)
@@ -146,7 +152,7 @@ intercepts<-sapply(all_coef, function(x) x["(Intercept)"])
 slopes<-sapply(all_coef, function(x) x["turn_out_rates"])
 
 #Plotting the confidence interval of the correlations for turn out rates <= 0.96
-ankara_2 <- filter(ankara_complete, turn_out_rates <= 0.96)
+ankara_2 <- filter(ankara_complete, turn_out_rates <= 0.7)
 attach(ankara_2)
 lmodel2<-lm(akp_total_vote_share~turn_out_rates)
 lboot2<-lm.boot(lmodel2,R=200)
@@ -161,7 +167,7 @@ slopes2<-sapply(all_coef2, function(x) x["turn_out_rates"])
 
 #Plotting the whole scatter plot separated by the threshold value. 
 
-x1_s <- 0.96
+x1_s <- 0.7
 x1_e <- 1.20
 y1_s <- intercepts + x1_s*slopes
 y1_e <- intercepts + x1_e*slopes
@@ -169,7 +175,7 @@ names(y1_s) <- NULL
 names(y1_e) <- NULL
 
 x2_s <- 0.3
-x2_e <- 0.96
+x2_e <- 0.7
 y2_s <- intercepts2 + x2_s*slopes2
 y2_e <- intercepts2 + x2_e*slopes2
 names(y2_s) <- NULL
@@ -177,10 +183,10 @@ names(y2_e) <- NULL
 
 pl6 <- ggplot(aes(x=turn_out_rates, y=akp_total_vote_share), data=ankara_complete) + 
   geom_point(size=2, colour="blue") +
-  geom_vline(xintercept=0.96, color="red")
-for(abc in 1:10)
-  pl6 <- pl6 + geom_segment(x=x1_s, y=y1_s[abc], xend=x1_e, yend=y1_e[abc], color="purple", alpha=0.2) + 
-         geom_segment(x=x2_s, y=y2_s[abc], xend=x2_e, yend=y2_e[abc], color="yellow", alpha=0.2)
+  geom_vline(xintercept=0.7, color="red")
+for(abc in 1:20)
+  pl6 <- pl6 + geom_segment(x=x1_s, y=y1_s[abc], xend=x1_e, yend=y1_e[abc], color="purple", alpha=1/20) + 
+         geom_segment(x=x2_s, y=y2_s[abc], xend=x2_e, yend=y2_e[abc], color="yellow", alpha=1/20)
 pl6
 
 #Non-parametric t-test
@@ -190,32 +196,6 @@ wilcox.test(slopes, slopes2)
 par(pch=20)
 plot(ankara$ballot, ankara$akp_total_vote_share)
 abline(lm(ankara$akp_total_vote_share~ankara$ballot), col="red")
-
-#Bootstrap to estimate the significance level of the fit line 
-library(boot)
-
-#Correlation with bootstrap
-boot.fn=function(data, index)
-  return(coef(lm(akp_total_vote_share~turn_out_rates, data=data, subset = index)))
-boot.fn(ankara_complete, 1:10000)
-
-set.seed(1)
-boot_pearson1 <- boot(filter(ankara_complete, turn_out_rates > 0.96), boot.fn, 2000)
-boot_pearson1
-
-set.seed(1)
-boot_pearson2<-boot(filter(ankara_complete, turn_out_rates <= 0.96), boot.fn, 2000)
-boot_pearson2
-
-library(dplyr)
-set.seed(1)
-temp2 <- filter(ankara_complete, turn_out_rates <= 0.96) %>%
-  sample_n(8000)
-
-set.seed(1)
-boot_pearson<-boot(temp2, bootTau, 8000)
-boot_pearson
-boot.ci(boot_pearson)
 
 #Results: 
 
