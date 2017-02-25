@@ -30,7 +30,7 @@ output:
 
 ## Introduction 
 
-- 2014 Turkish mayoral election
+- 2014 Turkish presidential election
 - AKP vote share vs. Turnout rates
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -157,7 +157,7 @@ pl1
 
 ## New Work
 
-- Comparison of two groups of data
+- Comparison of two groups of data divided by a certain turnout rate
   
   - Linear Regression
 
@@ -362,7 +362,9 @@ pl6
 
 ## Discussion & Conclusion
 
-- Separate the dataset by a turnout rate value
+- Refined the single linear regression
+
+- Separate the dataset by a turnout rate value and compare two samples of slopes
 
 - Null Hypothesis: Samples of slopes on both sides of the turnout rate value are from the same underlying distribution
 
@@ -372,8 +374,7 @@ pl6
 
 - For normally distributed residuals:
   - two-sample z-test
-  - z-score: 2.779
-  - p-value < 0.01
+  - z-score: 2.779, p-value < 0.01
   - Reject the null hypothesis
   
 - For non-normally distributed residuals:
@@ -381,12 +382,8 @@ pl6
   - non-parametric t-test
   - p-value < 0.01
   - Reject the null hypothesis
-
-## Future Possible Directions
-
-- Explores alternate algorithms used in the detection of fraud in Turkish Election
-
-- Applies the algorithms to other elections (Ultimately 2016 US Presidential Election)
+  
+- Conclusion: AKP committed a voting fraud with a high probability
 
 ## References
 
