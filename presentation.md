@@ -6,7 +6,7 @@ June 1, 2016
 
 -Dr. Sergey Samsonau from Princeton International School of Mathematics and Science
 
--Dr. Andi Shehu from City University of New York"
+-Dr. Andi Shehu from City University of New York
 
 ## Outline
 
