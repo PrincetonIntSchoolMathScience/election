@@ -2,6 +2,12 @@
 Lingyun Richard Xiao  
 June 1, 2016  
 
+## Advisors
+
+-Dr. Sergey Samsonau from Princeton International School of Mathematics and Science
+
+-Dr. Andi Shehu from City University of New York"
+
 ## Outline
 
 - About Data Science 
@@ -23,7 +29,7 @@ June 1, 2016
 
 ## Introduction 
 
-- 2014 Turkish mayoral election
+- 2014 Turkish presidential election
 - AKP vote share vs. Turnout rates
 
 ![](presentation_files/figure-html/unnamed-chunk-1-1.png)<!-- -->
@@ -49,7 +55,7 @@ June 1, 2016
 
 ## New Work
 
-- Comparison of two groups of data
+- Comparison of two groups of data divided by a certain turnout rate
   
   - Linear Regression
 
@@ -97,7 +103,9 @@ June 1, 2016
 
 ## Discussion & Conclusion
 
-- Separate the dataset by a turnout rate value
+- Refined the single linear regression
+
+- Separate the dataset by a turnout rate value and compare two samples of slopes
 
 - Null Hypothesis: Samples of slopes on both sides of the turnout rate value are from the same underlying distribution
 
@@ -106,22 +114,17 @@ June 1, 2016
 ## Discussion & Conclusion
 
 - For normally distributed residuals:
-  - two-sample z-test
-  - z-score: 2.779
-  - p-value < 0.01
-  - Reject the null hypothesis
+    + two-sample z-test
+    + z-score: 2.779, p-value < 0.01
+    + Reject the null hypothesis
   
 - For non-normally distributed residuals:
-  - bootstrapping
-  - non-parametric t-test
-  - p-value < 0.01
-  - Reject the null hypothesis
-
-## Future Possible Directions
-
-- Explores alternate algorithms used in the detection of fraud in Turkish Election
-
-- Applies the algorithms to other elections (Ultimately 2016 US Presidential Election)
+    + bootstrapping
+    + non-parametric t-test
+    + p-value < 0.01
+    + Reject the null hypothesis
+  
+- Conclusion: AKP committed a voting fraud with a high probability
 
 ## References
 

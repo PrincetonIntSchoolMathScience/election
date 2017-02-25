@@ -9,6 +9,12 @@ output:
   slidy_presentation: default
 ---
 
+## Advisors
+
+-Dr. Sergey Samsonau from Princeton International School of Mathematics and Science
+
+-Dr. Andi Shehu from City University of New York"
+
 ## Outline
 
 - About Data Science 
@@ -373,15 +379,15 @@ pl6
 ## Discussion & Conclusion
 
 - For normally distributed residuals:
-  - two-sample z-test
-  - z-score: 2.779, p-value < 0.01
-  - Reject the null hypothesis
+    + two-sample z-test
+    + z-score: 2.779, p-value < 0.01
+    + Reject the null hypothesis
   
 - For non-normally distributed residuals:
-  - bootstrapping
-  - non-parametric t-test
-  - p-value < 0.01
-  - Reject the null hypothesis
+    + bootstrapping
+    + non-parametric t-test
+    + p-value < 0.01
+    + Reject the null hypothesis
   
 - Conclusion: AKP committed a voting fraud with a high probability
 
